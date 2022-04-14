@@ -13,7 +13,6 @@ VALUES (20, 'confirmed tax evasion', 120),
 -- ('Margaret Wong', 'makaylaweiss@icloud.com')
 -- ('Leroy Hart', 'jaycereynolds@inbox.com');
 
-
 INSERT INTO properties (square_metres, exterior_paint_colour, marble_statues)
 VALUES (300, 'magenta', 'arnold_governator'),
 (2000, 'copper', 'Diogenes of Sinope'),
