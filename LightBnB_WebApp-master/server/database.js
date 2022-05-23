@@ -1,13 +1,21 @@
 const properties = require('./json/properties.json');
 const users = require('./json/users.json');
-
+const { Pool } = require('pg');
 /// Users
+
+const pool = new Pool({
+  user: 'vagrant',
+  password: '123',
+  host: 'localhost',
+  database: 'lightbnb'
+});
 
 /**
  * Get a single user from the database given their email.
  * @param {String} email The email of the user.
  * @return {Promise<{}>} A promise to the user.
  */
+
 const getUserWithEmail = function(email) {
   let user;
   for (const userId in users) {
@@ -76,15 +84,24 @@ const getAllProperties = function(options, limit = 10) {
 exports.getAllProperties = getAllProperties;
 
 
+
+
 /**
  * Add a property to the database
  * @param {{}} property An object containing all of the property details.
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function(property) {
-  const propertyId = Object.keys(properties).length + 1;
-  property.id = propertyId;
-  properties[propertyId] = property;
-  return Promise.resolve(property);
+  // const propertyId = Object.keys(properties).length + 1;
+  // property.id = propertyId;
+  // properties[propertyId] = property;
+  // return Promise.resolve(property);
+  const queryString = function(property) {
+    const queryString = `
+    INSERT INTO properties (owner_id, title, description, thumbnail_photo_url, cover_photo_url, cost_per_night, street, city, province, post_code, country, parking_spaces, number_of_bathrooms, number_of_bedrooms)
+    VALUES (int, string, string, string, string, string, string, string, string, string, string, int, int, int)
+    RETURNING *;
+    `;
+  }
 }
 exports.addProperty = addProperty;
