@@ -84,24 +84,63 @@ const getAllProperties = function(options, limit = 10) {
 exports.getAllProperties = getAllProperties;
 
 
-
-
 /**
  * Add a property to the database
  * @param {{}} property An object containing all of the property details.
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function(property) {
-  // const propertyId = Object.keys(properties).length + 1;
-  // property.id = propertyId;
-  // properties[propertyId] = property;
-  // return Promise.resolve(property);
-  const queryString = function(property) {
-    const queryString = `
-    INSERT INTO properties (owner_id, title, description, thumbnail_photo_url, cover_photo_url, cost_per_night, street, city, province, post_code, country, parking_spaces, number_of_bathrooms, number_of_bedrooms)
-    VALUES (int, string, string, string, string, string, string, string, string, string, string, int, int, int)
-    RETURNING *;
-    `;
+  const QPs = [];
+  const values = [];
+
+  const propertyAttributes = [
+    "owner_id",
+    "title",
+    "description",
+    "thumbnail_photo_url",
+    "cover_photo_url",
+    "cost_per_night",
+    "street",
+    "city",
+    "province",
+    "post_code",
+    "country",
+    "parking_spaces",
+    "number_of_bathrooms",
+    "number_of_bedrooms"
+  ];
+
+  for (let atrribute of propertyAttributes) {
+    if (property[atrribute]) {
+      QPs.push(atrribute);
+      values.push(`$${QPs.length}`);
+    }
   }
+
+  const QPsString = QPs.join();
+  const valsString = values.join();
+
+  const QVs = QPs.map((qParam) => property[qParam]);
+
+  const qText = `
+  INSERT INTO properties (${QPsString})
+  VALUES (${valsString})
+  RETURNING *;`;
+
+  const query = {
+    text: qText,
+    values: QVs,
+  };
+
+  return pool
+    .query(query)
+    .then((result) => {
+      return result.rows[0];
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }
+
+
 exports.addProperty = addProperty;
